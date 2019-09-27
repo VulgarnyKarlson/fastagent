@@ -7,6 +7,7 @@ import {
     RESPONSE_BODY,
 } from "./_constants";
 import coreModels from "./core";
+import axios from "./axios";
 
 const suite = new Benchmark.Suite();
 
@@ -26,6 +27,7 @@ nock(HTTPS_BASE_URL)
 
 const models = [
     ... coreModels,
+    ... axios,
 ];
 
 models.forEach((model) => {
