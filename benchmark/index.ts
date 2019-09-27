@@ -9,6 +9,7 @@ import {
 import coreModels from "./core";
 import axios from "./axios";
 import superagent from "./superagent";
+import request from "./request";
 
 const suite = new Benchmark.Suite();
 
@@ -29,7 +30,8 @@ nock(HTTPS_BASE_URL)
 const models = [
     ... coreModels,
     ... axios,
-    ... superagent
+    ... superagent,
+    ... request,
 ];
 
 models.forEach((model) => {
