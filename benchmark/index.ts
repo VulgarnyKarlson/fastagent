@@ -8,6 +8,7 @@ import {
 } from "./_constants";
 import coreModels from "./core";
 import fastAgent from "./fastagent";
+import got from "./got";
 import axios from "./axios";
 import superagent from "./superagent";
 import request from "./request";
@@ -31,6 +32,7 @@ nock(HTTPS_BASE_URL)
 const models = [
     ... fastAgent,
     ... coreModels,
+    ... got,
     ... axios,
     ... superagent,
     ... request,

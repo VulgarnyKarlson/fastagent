@@ -1,26 +1,24 @@
-import Client from "../src/";
+import got from "got";
 import {HTTP_BASE_URL, HTTPS_BASE_URL, PATH} from "./_constants";
 import { BenchmarkModel } from "./types/benchmarkModel";
-
-const client = new Client();
 
 const benchmarkModels: BenchmarkModel[] = [
     {
         fn: (defer: any) => {
-            client.get(`${HTTP_BASE_URL}${PATH}`).then( () => {
+            got(`${HTTP_BASE_URL}${PATH}`).then( () => {
                 defer.resolve();
             })
         },
-        target: "[fastagent] http [GET]",
+        target: "[got] http [GET]",
         defer: true,
     },
     {
         fn: (defer: any) => {
-            client.get(`${HTTPS_BASE_URL}${PATH}`).then( () => {
+            got(`${HTTPS_BASE_URL}${PATH}`).then( () => {
                 defer.resolve();
             });
         },
-        target: "[fastagent] https [GET]",
+        target: "[got] https [GET]",
         defer: true,
     },
 ];
