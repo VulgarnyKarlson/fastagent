@@ -24,7 +24,7 @@ export default class Client {
         this.agents["https:"] = options.httpsAgent;
     }
 
-    public makeRequest(options: Options, cb: (data: OutputMessage) => void) {
+    public makeRequest(options: any, cb: (data: OutputMessage) => void) {
         let called = false;
         const callCallback = (data) => {
             if (called) {
@@ -70,7 +70,6 @@ export default class Client {
 
     public get(options: Options | string, cb: (data: OutputMessage) => void) {
         options = this.getOptions(options);
-        options.method = "GET";
         return this.makeRequest(options, cb);
     }
 
@@ -80,8 +79,8 @@ export default class Client {
         return this.makeRequest(options, cb);
     }
 
-    private getOptions(uri: Options | string) {
-        let options = {} as Options;
+    private getOptions(uri: any) {
+        let options = {} as any;
         if (typeof uri === "string") {
             options.uri = uri;
         } else {
@@ -105,9 +104,10 @@ export default class Client {
             }
             Object.assign(options, url.parse(options.uri))
         }
-        options.protocol = options.protocol || "https:";
+        options.protocol = (options._protocol || "https") + ":";
         options.timeout = options.timeout || DEFAULT_TIMEOUT;
         options.responseType = options.responseType || "binary";
+        options.path = (options.pathname || options.path) + (options.search || "");
         return options;
     }
 
