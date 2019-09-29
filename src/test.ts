@@ -2,7 +2,8 @@ import Client from "./";
 const client = new Client();
 
 ( async() => {
-    console.log(await client.makeRequest("https://www.google.com", {
+    client.get({
+        uri: "https://www.google.com",
         responseType: "text"
-    }).catch(console.log));
+    }, console.log);
 })();

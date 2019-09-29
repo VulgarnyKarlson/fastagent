@@ -1,27 +1,18 @@
 import * as http from "./enum/httpClient";
 import querystring from "querystring";
-import {EventEmitter} from "events";
 import {Options} from "./types/options";
-import {IncomingMessage} from "./enum/httpClient";
 import * as utils from "./utils";
+import {IncomingMessage} from "./enum/httpClient";
 
-
-
-export default interface Req {
-    once(event: "end", handler: (data?: Buffer) => void): this;
-    once(event: "error", handler: (error: Error) => void): this;
-    once(event: "timeout", handler: () => void): this;
-    once(event: "faketimeout", handler: () => void): this;
-    once(event: "drain", handler: (req, res: IncomingMessage) => void): this;
-    constructor(): this;
-}
-
-export default class Request extends EventEmitter {
+export default class Request {
     private responseTimeout = null;
 
-    constructor() {
-        super();
-    }
+    constructor(
+        private endCB: (res: IncomingMessage & {data?: Buffer}) => void,
+        private errorCB: (error: Error) => void,
+        private timeoutCB: () => void,
+        private faketimeoutCB: () => void
+    ) { }
 
     public request(
         options: Options
@@ -29,20 +20,16 @@ export default class Request extends EventEmitter {
         const timeout = options.timeout;
         delete options.timeout;
         const req = http.client[options.protocol].request(options, (res: http.IncomingMessage) => {
-            this.emit("drain", {
-                req, res
-            });
-
-            // zlib support
-            if (utils._shouldUnzip(res)) {
-                utils.unzip(req, res);
-            }
-
             if (options.responseType === "empty") {
                 res.resume().on("end", () => {
-                    this.emitAndDestroy(req, "end");
+                    this.endCB(res);
+                    this.destroy(req);
                 })
             } else {
+                // zlib support
+                if (utils._shouldUnzip(res)) {
+                    utils.unzip(req, res);
+                }
                 const data = [];
                 // Protectiona against zip bombs and other nuisance
                 let responseBytesLeft = options.maxResponseSize || 200000000;
@@ -57,7 +44,9 @@ export default class Request extends EventEmitter {
                     }
                 });
                 res.on("end", () => {
-                    this.emitAndDestroy(req, "end", utils.fromArrayToBuffer(data));
+                    Object.assign(res, { data: utils.fromArrayToBuffer(data) });
+                    this.endCB(res);
+                    this.destroy(req);
                 })
             }
         });
@@ -67,7 +56,7 @@ export default class Request extends EventEmitter {
 
         this.IfError(req);
         this.setTimeout(req, timeout);
-        this.IfFakeTimeout(req, options.fakeTimeout);
+        this.IfFakeTimeout(options.fakeTimeout);
         req.end();
     }
 
@@ -80,33 +69,31 @@ export default class Request extends EventEmitter {
 
     private IfError(req) {
         req.on('error', err => {
-            this.emitAndDestroy(req, "error", err);
+            this.errorCB(err);
+            this.destroy(req);
         });
     }
 
     private setTimeout(req, timeout) {
         this.responseTimeout = setTimeout( () => {
             req.abort();
-            this.emitAndDestroy(req, "timeout");
-            this.removeAllListeners();
+            this.destroy(req);
         }, timeout);
     }
 
-    private IfFakeTimeout(req, fakeTimeout) {
+    private IfFakeTimeout(fakeTimeout) {
         // req.abort() is high cost operation, sometimes servers are gives response, anyways we have default_timeout
         if (fakeTimeout) {
             setTimeout( () => {
-                this.emit(req, "faketimeout");
+                this.faketimeoutCB()
             }, fakeTimeout)
         }
     }
 
-    private emitAndDestroy(req, event, data?) {
-        this.emit(event, data);
+    private destroy(req) {
         if (this.responseTimeout) {
             clearTimeout(this.responseTimeout);
         }
         req.removeAllListeners();
-        this.removeAllListeners();
     }
 }

@@ -6,16 +6,12 @@ import {HttpStatus} from "./enum/httpStatus";
 import { IncomingMessage} from "./enum/httpClient";
 import {responseType} from "./types/options";
 
-export const parseResponse = async (res: IncomingMessage, responseType: responseType, data: Buffer): Promise<OutputMessage> => {
-    const parser = getParserType(res, responseType);
-    console.log(responseType);
-    return new Promise((resolve, reject) => {
-        utils.resolveOrReject(resolve, reject,{
-            statusCode: res.statusCode,
-            statusMessage: HttpStatus[res.statusCode] || res.statusMessage,
-            raw: parser(data),
-        });
-    });
+export const parseResponse = (res: IncomingMessage & { data?: Buffer }, responseType: responseType): OutputMessage => {
+    return {
+        statusCode: res.statusCode,
+        statusMessage: HttpStatus[res.statusCode] || res.statusMessage,
+        raw: responseType === "empty" ? null: getParserType(res, responseType)(res.data),
+    }
 };
 
 

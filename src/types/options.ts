@@ -10,6 +10,7 @@ export type responseType = "application/x-www-form-urlencoded"
     | "image"
     | "empty"
 
+export { Protocol };
 export interface Options {
     uri?: string;
     host?: string;
