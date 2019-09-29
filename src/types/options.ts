@@ -25,6 +25,7 @@ export interface Options {
     postBody?: any;
     headers?: any;
     encoding?: string;
+    agent?: any;
     httpAgent?: any;
     httpsAgent?: any;
 }

@@ -14,8 +14,14 @@ export { OutputMessage };
 
 export default class Client {
 
-    constructor(public options: Options = {} as any) {
+    private agents = {
+        "http:": undefined,
+        "https:": undefined,
+    };
 
+    constructor(public options: Options = {} as any) {
+        this.agents["http:"] = options.httpAgent;
+        this.agents["https:"] = options.httpsAgent;
     }
 
     public makeRequest(options: Options, cb: (data: OutputMessage) => void) {
@@ -59,7 +65,7 @@ export default class Client {
             },
         );
 
-        requester.request(options);
+        requester.request({ ... options, agent: this.agents[options.protocol]);
     }
 
     public get(options: Options | string, cb: (data: OutputMessage) => void) {
