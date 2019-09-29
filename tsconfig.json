@@ -12,8 +12,8 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "target": "esnext",
-    "outDir": "./lib",
-    "baseUrl": "./src",
+    "outDir": "./dist",
+    "baseUrl": "src",
     "typeRoots": [
       "node_modules/@types"
     ],

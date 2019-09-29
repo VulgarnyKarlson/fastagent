@@ -7,6 +7,7 @@ import {
     RESPONSE_BODY,
 } from "./_constants";
 import coreModels from "./core";
+import fastAgent from "./fastagent";
 import axios from "./axios";
 import superagent from "./superagent";
 import request from "./request";
@@ -28,6 +29,7 @@ nock(HTTPS_BASE_URL)
     .reply(200, RESPONSE_BODY);
 
 const models = [
+    ... fastAgent,
     ... coreModels,
     ... axios,
     ... superagent,
