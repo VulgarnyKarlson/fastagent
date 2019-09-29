@@ -79,7 +79,7 @@ export const unzip = (req, res) => {
 };
 
 export const resolveOrReject = (resolve, reject, data: OutputMessage) => {
-    if (data) {
+    if (data === null || data) {
         resolve(data);
     } else {
         reject(data);

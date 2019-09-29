@@ -1,12 +1,12 @@
 {
   "name": "fastagent",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Fast nodejs http/https client",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest --config jestconfig.json",
-    "benchmark": "NODE_PATH=src node -r ts-node/register --max-old-space-size=4096 benchmark/index.ts"
+    "benchmark": "node -r ts-node/register --max-old-space-size=4096 benchmark/index.ts"
   },
   "repository": {
     "type": "git",

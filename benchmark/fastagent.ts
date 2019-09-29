@@ -7,7 +7,7 @@ const client = new Client();
 const benchmarkModels: BenchmarkModel[] = [
     {
         fn: (defer: any) => {
-            client.makeRequest({ host: HOST, path: PATH, protocol: "http:", noResponse: true, responseType: "text" }).then( () => {
+            client.makeRequest({ host: HOST, path: PATH, protocol: "http:", responseType: "empty" }).then( () => {
                 defer.resolve();
             })
         },
@@ -16,7 +16,7 @@ const benchmarkModels: BenchmarkModel[] = [
     },
     {
         fn: (defer: any) => {
-            client.makeRequest({ host: HOST, path: PATH, protocol: "https:", noResponse: true, responseType: "text" }).then( () => {
+            client.makeRequest({ host: HOST, path: PATH, protocol: "https:", responseType: "empty" }).then( () => {
                 defer.resolve();
             });
         },

@@ -6,6 +6,7 @@ const client = new Client();
         host: "www.google.com",
         path: "/",
         protocol: "https:",
+        responseType: "empty",
         timeout: 2000,
     }).catch(console.log));
 })();

@@ -37,8 +37,7 @@ export default class Request extends EventEmitter {
             });
 
             res.on("end", () => {
-                this.emit("end");
-                this.removeAllListeners();
+                this.emitAndDestroy(req, "end");
             })
         });
         if (options.method === 'POST') {
