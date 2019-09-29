@@ -4,8 +4,13 @@ import * as utils from "./utils";
 import {HttpStatus} from "./enum/httpStatus";
 import {parseResponse} from "./res";
 import {OutputMessage} from "./types/response";
+import url from "fast-url-parser";
 
 const DEFAULT_TIMEOUT = 60 * 1000;
+
+export { Options };
+export { HttpStatus };
+export { OutputMessage };
 
 export default class Client {
     private requester = new Req();
@@ -14,10 +19,33 @@ export default class Client {
 
     }
 
-    public makeRequest(options: Options) {
-        Object.assign(options, this.options);
-        options.timeout = options.timeout || DEFAULT_TIMEOUT;
+    public makeRequest(uri: Options | string, opts?: Options) {
+        let options = {} as Options;
+        if (typeof uri === "string") {
+            options.uri = uri;
+        } else {
+            Object.assign(options, opts);
+        }
 
+        Object.assign(options, this.options);
+        if (typeof options.uri === "string" && options.uri.indexOf("http") === -1) {
+            if (typeof options.protocol === "undefined") {
+                options.uri = "http://" + options.uri;
+            } else {
+                options.uri = options.protocol + "//" + options.uri;
+            }
+        }
+        if (typeof options.host === "undefined"
+            || typeof options.path === "undefined"
+            || typeof options.protocol === "undefined"
+        ) {
+            if (typeof options.uri === "undefined") {
+                throw new Error("Pass correctly url or host&path&protocol options")
+            }
+            Object.assign(options, url.parse(options.uri))
+        }
+        options.protocol = options.protocol || "https:";
+        options.timeout = options.timeout || DEFAULT_TIMEOUT;
         this.requester.request(options);
 
         return new Promise( (resolve, reject) => {
@@ -47,12 +75,22 @@ export default class Client {
                     utils.resolveOrReject(resolve, reject, this.getHttpWithMessage(HttpStatus.ENOTFOUND))
                 } else if (error.message.indexOf(HttpStatus[HttpStatus.ETOOLARGE]) !== -1) {
                     utils.resolveOrReject(resolve, reject, this.getHttpWithMessage(HttpStatus.ETOOLARGE))
+                } else if (error.message.indexOf(HttpStatus[HttpStatus.ECONNREFUSED]) !== -1) {
+                    utils.resolveOrReject(resolve, reject, this.getHttpWithMessage(HttpStatus.ECONNREFUSED))
                 } else {
                     utils.resolveOrReject(resolve, reject, this.getHttpWithMessage(HttpStatus.UNKNOWN))
                 }
             })
         })
 
+    }
+
+    public get(uri: Options | string, opts?: Options) {
+        return this.makeRequest(uri, { method: "GET", ... opts });
+    }
+
+    public post(uri: Options | string, opts?: Options) {
+        return this.makeRequest(uri, { method: "POST", ... opts });
     }
 
     private getHttpWithMessage(code: number) {

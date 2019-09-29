@@ -2,10 +2,9 @@ import {Method} from "./method";
 import {Protocol} from "./protocol";
 
 export interface Options {
-    url?: string;
     uri?: string;
-    host: string;
-    path: string;
+    host?: string;
+    path?: string;
     responseType?: "application/x-www-form-urlencoded"
                     | "application/json"
                     | "text"

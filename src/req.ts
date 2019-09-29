@@ -40,7 +40,7 @@ export default class Request extends EventEmitter {
                 this.emitAndDestroy(req, "end");
             })
         });
-        if (options.method === 'POST') {
+        if (options.method === 'POST' || options.method === "post") {
             this.IfRequestPost(req, options.postBody);
         }
 

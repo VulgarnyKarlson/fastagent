@@ -50,5 +50,6 @@ export enum HttpStatus {
     ABORTED = 604,
     ENOTFOUND = 605,
     ETOOLARGE = 606,
+    ECONNREFUSED = 607,
     UNKNOWN = 1000,
 }
