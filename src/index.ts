@@ -65,7 +65,7 @@ export default class Client {
             },
         );
 
-        requester.request({ ... options, agent: this.agents[options.protocol]);
+        requester.request({ ... options, agent: this.agents[options.protocol] });
     }
 
     public get(options: Options | string, cb: (data: OutputMessage) => void) {
