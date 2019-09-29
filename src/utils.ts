@@ -106,6 +106,12 @@ export const isJSON = (mime: string) => {
     return /[/+]json($|[^-\w])/.test(mime);
 };
 
+export const fromArrayToBuffer = (arr) => {
+    const buff = Buffer.from(arr);
+    arr.length = 0;
+    return buff;
+}
+
 /**
  * Check if we should follow the redirect `code`.
  *

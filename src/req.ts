@@ -3,12 +3,12 @@ import querystring from "querystring";
 import {EventEmitter} from "events";
 import {Options} from "./types/options";
 import {IncomingMessage} from "./enum/httpClient";
+import * as utils from "./utils";
 
 
 
 export default interface Req {
-    on(event: "data", handler: (data) => void): this;
-    once(event: "end", handler: () => void): this;
+    once(event: "end", handler: (data?: Buffer) => void): this;
     once(event: "error", handler: (error: Error) => void): this;
     once(event: "timeout", handler: () => void): this;
     once(event: "faketimeout", handler: () => void): this;
@@ -32,13 +32,34 @@ export default class Request extends EventEmitter {
             this.emit("drain", {
                 req, res
             });
-            res.on("data", (data) => {
-                this.emit("data", data);
-            });
 
-            res.on("end", () => {
-                this.emitAndDestroy(req, "end");
-            })
+            // zlib support
+            if (utils._shouldUnzip(res)) {
+                utils.unzip(req, res);
+            }
+
+            if (options.responseType === "empty") {
+                res.resume().on("end", () => {
+                    this.emitAndDestroy(req, "end");
+                })
+            } else {
+                const data = [];
+                // Protectiona against zip bombs and other nuisance
+                let responseBytesLeft = options.maxResponseSize || 200000000;
+                res.on('data', chunk => {
+                    responseBytesLeft -= chunk.byteLength || chunk.length;
+                    if (responseBytesLeft < 0) {
+                        const err = new Error('Maximum response size reached');
+                        Object.assign(err, {code: ''});
+                        res.destroy(err);
+                    } else {
+                        data.push(...chunk);
+                    }
+                });
+                res.on("end", () => {
+                    this.emitAndDestroy(req, "end", utils.fromArrayToBuffer(data));
+                })
+            }
         });
         if (options.method === 'POST' || options.method === "post") {
             this.IfRequestPost(req, options.postBody);

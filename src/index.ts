@@ -23,7 +23,9 @@ export default class Client {
         let options = {} as Options;
         if (typeof uri === "string") {
             options.uri = uri;
-        } else {
+        };
+
+        if (typeof opts !== "undefined") {
             Object.assign(options, opts);
         }
 
@@ -46,12 +48,15 @@ export default class Client {
         }
         options.protocol = options.protocol || "https:";
         options.timeout = options.timeout || DEFAULT_TIMEOUT;
+        options.responseType = options.responseType || "binary";
         this.requester.request(options);
 
         return new Promise( (resolve, reject) => {
             this.requester.once("drain", ({ req, res}) => {
-                parseResponse(req, res, options.responseType).then( (data: OutputMessage) => {
-                    utils.resolveOrReject(resolve, reject, data)
+                this.requester.once("end", (data: Buffer) => {
+                    parseResponse(res, options.responseType, data).then( (data: OutputMessage) => {
+                        utils.resolveOrReject(resolve, reject, data)
+                    })
                 })
             });
 
