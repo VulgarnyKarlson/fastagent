@@ -28,7 +28,7 @@ yarn add fastagent
 import Client from "fastagent";
 const client = new Client();
 
-( async() => {
+( () => {
     client.get({
         uri: "https://www.google.com",
         responseType: "text"
