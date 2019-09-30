@@ -1,11 +1,13 @@
 import Client from "./";
 import nock from "nock";
+import {HttpStatus} from "./";
 
 nock("http://benchmark.io")
     .persist()
     .get("/")
-    .delayConnection(10000)
-    .reply(200, "hello");
+    .delayConnection(9000)
+    .replyWithError({ message: HttpStatus[HttpStatus.ETIMEDOUT] });
+
 
 const client = new Client();
 
