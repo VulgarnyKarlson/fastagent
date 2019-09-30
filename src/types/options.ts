@@ -15,6 +15,7 @@ export interface Options {
     uri?: string;
     host?: string;
     path?: string;
+    port?: number;
     responseType?: responseType;
     maxResponseSize?: number;
     method?: Method;

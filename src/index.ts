@@ -108,6 +108,7 @@ export default class Client {
         options.timeout = options.timeout || DEFAULT_TIMEOUT;
         options.responseType = options.responseType || "binary";
         options.path = (options.pathname || options.path) + (options.search || "");
+        options.port = options._port;
         return options;
     }
 
