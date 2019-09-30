@@ -49,6 +49,8 @@ export default class Request {
                     this.destroy(req);
                 })
             }
+        }).on("abort", () => {
+            this.timeoutCB()
         });
         if (options.method === 'POST' || options.method === "post") {
             this.IfRequestPost(req, options.postBody);
