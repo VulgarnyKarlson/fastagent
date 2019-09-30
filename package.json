@@ -1,6 +1,6 @@
 {
   "name": "fastagent",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Fast nodejs http/https client",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

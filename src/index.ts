@@ -1,4 +1,4 @@
-import { Options} from "types/options";
+import { Options} from "./types/options";
 import Req from "./req";
 import {HttpStatus} from "./enum/httpStatus";
 import {parseResponse} from "./res";
