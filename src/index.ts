@@ -39,6 +39,10 @@ export default class Client {
                 callCallback(parseResponse(res, options.responseType));
             },
             (error: Error) => {
+                if (typeof error.message !== "string") {
+                    return callCallback(this.getHttpWithMessage(HttpStatus.UNKNOWN));
+                }
+
                 if (error.message.indexOf(HttpStatus[HttpStatus.EADDRINFO]) !== -1) {
                     callCallback(this.getHttpWithMessage(HttpStatus.EADDRINFO))
                 } else if (error.message.indexOf(HttpStatus[HttpStatus.ECONNRESET]) !== -1) {
