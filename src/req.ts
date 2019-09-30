@@ -20,6 +20,7 @@ export default class Request {
         const timeout = options.timeout;
         delete options.timeout;
         const req = http.client[options.protocol].request(options, (res: http.IncomingMessage) => {
+            this.IfError(res);
             if (options.responseType === "empty") {
                 res.resume().on("end", () => {
                     this.endCB(res);

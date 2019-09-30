@@ -45,7 +45,9 @@ export default class Client {
 
                 if (error.message.indexOf(HttpStatus[HttpStatus.EADDRINFO]) !== -1) {
                     callCallback(this.getHttpWithMessage(HttpStatus.EADDRINFO))
-                } else if (error.message.indexOf(HttpStatus[HttpStatus.ECONNRESET]) !== -1) {
+                } else if (error.message.indexOf(HttpStatus[HttpStatus.ECONNRESET]) !== -1
+                    || error.message.indexOf("hang up") !== -1
+                ) {
                     callCallback(this.getHttpWithMessage(HttpStatus.ECONNRESET))
                 } else if (error.message.indexOf(HttpStatus[HttpStatus.ETIMEDOUT]) !== -1) {
                     callCallback(this.getHttpWithMessage(HttpStatus.ETIMEDOUT))
