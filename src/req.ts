@@ -20,11 +20,14 @@ export default class Request {
         const timeout = options.timeout;
         delete options.timeout;
         const req = http.client[options.protocol].request(options, (res: http.IncomingMessage) => {
-            this.IfError(res);
+            res.on('error', err => {
+                this.errorCB(err);
+                this.destroy();
+            });
             if (options.responseType === "empty") {
                 res.resume().on("end", () => {
                     this.endCB(res);
-                    this.destroy(req);
+                    this.destroy();
                 })
             } else {
                 // zlib support
@@ -47,9 +50,12 @@ export default class Request {
                 res.on("end", () => {
                     Object.assign(res, { data: utils.fromArrayToBuffer(data) });
                     this.endCB(res);
-                    this.destroy(req);
+                    this.destroy();
                 })
             }
+        }).on('error', err => {
+            this.errorCB(err);
+            this.destroy();
         }).on("abort", () => {
             this.timeoutCB()
         });
@@ -70,17 +76,10 @@ export default class Request {
         req.write(postBody)
     }
 
-    private IfError(req) {
-        req.on('error', err => {
-            this.errorCB(err);
-            this.destroy(req);
-        });
-    }
-
     private setTimeout(req, timeout) {
         this.responseTimeout = setTimeout( () => {
             req.abort();
-            this.destroy(req);
+            this.destroy();
         }, timeout);
     }
 
@@ -93,10 +92,9 @@ export default class Request {
         }
     }
 
-    private destroy(req) {
+    private destroy() {
         if (this.responseTimeout) {
             clearTimeout(this.responseTimeout);
         }
-        req.removeAllListeners();
     }
 }
