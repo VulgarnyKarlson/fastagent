@@ -63,7 +63,6 @@ export default class Request {
             this.IfRequestPost(req, options.postBody);
         }
 
-        this.IfError(req);
         this.setTimeout(req, timeout);
         this.IfFakeTimeout(options.fakeTimeout);
         req.end();
