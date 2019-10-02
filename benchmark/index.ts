@@ -32,16 +32,16 @@ nock(HTTPS_BASE_URL)
 const models = [
     ... fastAgent,
     ... coreModels,
-    ... got,
-    ... axios,
     ... superagent,
     ... request,
+    ... axios,
+    ... got,
 ];
 
 models.forEach((model) => {
     suite.add(model.target, {
         defer: true,
-        minSamples: 50,
+        minSamples: 100,
         fn: model.fn,
     });
 });

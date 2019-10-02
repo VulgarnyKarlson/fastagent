@@ -41,20 +41,20 @@ const client = new Client();
 ```text
 > node -r ts-node/register --max-old-space-size=4096 benchmark/index.ts
 
-[fastagent] http empty response [GET] x 16,012 ops/sec ±6.81% (128 runs sampled)
-[fastagent] https empty response [GET] x 15,531 ops/sec ±3.09% (121 runs sampled)
-[fastagent] http binary response [GET] x 14,060 ops/sec ±2.46% (123 runs sampled)
-[fastagent] https binary response [GET] x 14,250 ops/sec ±1.74% (126 runs sampled)
-[core] http [GET] x 22,601 ops/sec ±3.53% (126 runs sampled)
-[core] https [GET] x 22,413 ops/sec ±1.08% (127 runs sampled)
-[got] http [GET] x 2,799 ops/sec ±4.84% (124 runs sampled)
-[got] https [GET] x 3,141 ops/sec ±1.53% (127 runs sampled)
-[axios] http [GET] x 7,672 ops/sec ±4.74% (119 runs sampled)
-[axios] https [GET] x 7,983 ops/sec ±2.62% (123 runs sampled)
-[superagent] http [GET] x 10,786 ops/sec ±3.41% (130 runs sampled)
-[superagent] https [GET] x 11,474 ops/sec ±0.94% (127 runs sampled)
-[request] http [GET] x 8,804 ops/sec ±3.57% (130 runs sampled)
-[request] https [GET] x 9,540 ops/sec ±1.01% (130 runs sampled)
+[fastagent] http empty response [GET] x 18,845 ops/sec ±5.63% (180 runs sampled)
+[fastagent] https empty response [GET] x 18,959 ops/sec ±2.18% (176 runs sampled)
+[fastagent] http binary response [GET] x 16,369 ops/sec ±2.80% (173 runs sampled)
+[fastagent] https binary response [GET] x 15,825 ops/sec ±1.65% (177 runs sampled)
+[core] http [GET] x 23,320 ops/sec ±2.96% (176 runs sampled)
+[core] https [GET] x 23,823 ops/sec ±1.03% (181 runs sampled)
+[superagent] http [GET] x 10,227 ops/sec ±4.17% (173 runs sampled)
+[superagent] https [GET] x 10,811 ops/sec ±3.22% (173 runs sampled)
+[request] http [GET] x 10,062 ops/sec ±2.34% (182 runs sampled)
+[request] https [GET] x 9,789 ops/sec ±1.28% (180 runs sampled)
+[axios] http [GET] x 8,200 ops/sec ±2.89% (169 runs sampled)
+[axios] https [GET] x 8,388 ops/sec ±2.74% (175 runs sampled)
+[got] http [GET] x 2,993 ops/sec ±3.47% (175 runs sampled)
+[got] https [GET] x 3,215 ops/sec ±2.73% (173 runs sampled)
 Benchmark done
 ```
 ## License

@@ -1,7 +1,6 @@
 import { StringDecoder } from "string_decoder";
 import Stream from "stream";
 import zlib from "zlib";
-import {OutputMessage} from "./types/response";
 
 export const type = (str: string) => str.split(/ *; */).shift();
 
@@ -78,14 +77,6 @@ export const unzip = (req, res) => {
     };
 };
 
-export const resolveOrReject = (resolve, reject, data: OutputMessage) => {
-    if (data === null || data) {
-        resolve(data);
-    } else {
-        reject(data);
-    }
-};
-
 export const isText = (mime: string) => {
     const parts = mime.split('/');
     const type = parts[0];
@@ -110,17 +101,4 @@ export const fromArrayToBuffer = (arr) => {
     const buff = Buffer.from(arr);
     arr.length = 0;
     return buff;
-}
-
-/**
- * Check if we should follow the redirect `code`.
- *
- * @param {Number} code
- * @return {Boolean}
- * @api private
- */
-
-function isRedirect(code) {
-    return [301, 302, 303, 305, 307, 308].indexOf(code) !== -1;
-}
-
+};

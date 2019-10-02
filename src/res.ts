@@ -22,15 +22,15 @@ const getParserType = (res, parserType) => {
         const type = mime.split('/')[0];
         if (parsers[mime]) {
             parser = parsers[mime];
-        } else if (type === 'text') {
-            parser = parsers.text;
         } else if (type === "multipart") {
             const form = new formidable.IncomingForm();
             parser = form.parse.bind(form);
-        } else if (utils.isImageOrVideo(mime)) {
-            parser = parsers.image;
+        } else if (utils.isText(mime)) {
+            parser = parsers.text;
         } else if (utils.isJSON(mime)) {
             parser = parsers['application/json'];
+        } else if (utils.isImageOrVideo(mime)) {
+            parser = parsers.image;
         } else {
             parser = parsers.binary; // It's actually a generic Buffer
         }
