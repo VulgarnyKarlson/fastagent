@@ -1,7 +1,9 @@
 import Client from "../src/";
-import { BenchmarkModel } from "./types/benchmarkModel";
+import {Protocol, responseType} from "../src/types/options";
 import * as _constants from "./_constants";
-import {responseType, Protocol} from "../src/types/options";
+import {HTTP_BASE_URL} from "./_constants";
+import {PATH} from "./_constants";
+import { BenchmarkModel } from "./types/benchmarkModel";
 
 const client = new Client();
 const opts = {
@@ -20,6 +22,12 @@ const benchmarkModels: BenchmarkModel[] = [
             client.get(httpOptsEmpty, () => defer.resolve());
         },
         target: "[fastagent] http empty response [GET]",
+        defer: true,
+    },    {
+        fn: (defer: any) => {
+            client.get({ uri: `${HTTP_BASE_URL}${PATH}`, responseType: "empty"}, () => defer.resolve());
+        },
+        target: "[fastagent] http empty response with url.parse [GET]",
         defer: true,
     },
     {

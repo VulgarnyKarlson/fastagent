@@ -5,13 +5,11 @@ import {HttpStatus} from "./";
 nock("http://benchmark.io")
     .persist()
     .get("/")
-    .delayConnection(9000)
-    .replyWithError({ message: HttpStatus[HttpStatus.ETIMEDOUT] });
-
-
+    .delayConnection(1000)
+    .reply(200, { message: HttpStatus[HttpStatus.ETIMEDOUT] });
 const client = new Client();
 
-( async() => {
+( () => {
     client.get({
         uri: "http://benchmark.io",
         responseType: "text",

@@ -1,15 +1,15 @@
-import * as http from "./enum/httpClient";
 import querystring from "querystring";
+import * as http from "./enum/httpClient";
+import {IncomingMessage} from "./enum/httpClient";
 import {Options} from "./types/options";
 import * as utils from "./utils";
-import {IncomingMessage} from "./enum/httpClient";
 
 export const request = (
     endCB: (res: IncomingMessage & {data?: Buffer}) => void,
     errorCB: (error: Error) => void,
     timeoutCB: () => void,
     faketimeoutCB: () => void,
-    options: Options
+    options: Options,
 ) => {
     let responseTimeout = null;
     const destroy = () => {
@@ -27,13 +27,13 @@ export const request = (
     // req.abort() is high cost operation, sometimes servers are gives response, anyways we have default_timeout
     if (options.fakeTimeout) {
         setTimeout( () => {
-            faketimeoutCB()
-        }, options.fakeTimeout)
+            faketimeoutCB();
+        }, options.fakeTimeout);
     }
 
     delete options.timeout;
     const req = http.client[options.protocol].request(options, (res: http.IncomingMessage) => {
-        res.on('error', err => {
+        res.on("error", (err) => {
             errorCB(err);
             destroy();
         });
@@ -41,20 +41,20 @@ export const request = (
             res.resume().on("end", () => {
                 endCB(res);
                 destroy();
-            })
+            });
         } else {
             // zlib support
-            if (utils._shouldUnzip(res)) {
+            if (utils.shouldUnzip(res)) {
                 utils.unzip(req, res);
             }
             const data = [];
             // Protectiona against zip bombs and other nuisance
             let responseBytesLeft = options.maxResponseSize || 200000000;
-            res.on('data', chunk => {
+            res.on("data", (chunk) => {
                 responseBytesLeft -= chunk.byteLength || chunk.length;
                 if (responseBytesLeft < 0) {
-                    const err = new Error('Maximum response size reached');
-                    Object.assign(err, {code: ''});
+                    const err = new Error("Maximum response size reached");
+                    Object.assign(err, {code: ""});
                     res.destroy(err);
                 } else {
                     data.push(...chunk);
@@ -64,18 +64,18 @@ export const request = (
                 Object.assign(res, { data: utils.fromArrayToBuffer(data) });
                 endCB(res);
                 destroy();
-            })
+            });
         }
-    }).on('error', err => {
+    }).on("error", (err) => {
         errorCB(err);
         destroy();
     }).on("abort", () => {
-        timeoutCB()
+        timeoutCB();
     });
 
-    if (options.method === 'POST' || options.method === "post") {
-        if (typeof options.postBody !== 'string') {
-            options.postBody = querystring.stringify(options.postBody)
+    if (options.method === "POST" || options.method === "post") {
+        if (typeof options.postBody !== "string") {
+            options.postBody = querystring.stringify(options.postBody);
         }
         req.write(options.postBody);
     }

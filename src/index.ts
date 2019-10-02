@@ -1,10 +1,11 @@
-import { Options} from "./types/options";
-import { request } from "./req";
-import {HttpStatus} from "./enum/httpStatus";
-import {parseResponse} from "./res";
-import {OutputMessage} from "./types/response";
-import url from "fast-url-parser";
+import url from "url";
 import {IncomingMessage} from "./enum/httpClient";
+import {HttpStatus} from "./enum/httpStatus";
+import { request } from "./req";
+import {parseResponse} from "./res";
+import { Options} from "./types/options";
+import {OutputMessage} from "./types/response";
+import * as utils from "./utils";
 
 const DEFAULT_TIMEOUT = 60 * 1000;
 
@@ -39,7 +40,7 @@ export default class {
             (error: Error) => callCallback(this.errorCB(error)),
             () => callCallback(this.getHttpWithMessage(HttpStatus.REQUEST_TIMEOUT)),
             () => callCallback(this.getHttpWithMessage(HttpStatus.ABORTED)),
-            { ... options, agent: this.agents[options.protocol] }
+            { ... options, agent: this.agents[options.protocol] },
         );
     }
 
@@ -57,7 +58,7 @@ export default class {
         }
 
         if (error.message.indexOf(HttpStatus[HttpStatus.EADDRINFO]) !== -1) {
-            this.getHttpWithMessage(HttpStatus.EADDRINFO)
+            this.getHttpWithMessage(HttpStatus.EADDRINFO);
         } else if (error.message.indexOf(HttpStatus[HttpStatus.ECONNRESET]) !== -1
             || error.message.indexOf("hang up") !== -1
         ) {
@@ -78,54 +79,35 @@ export default class {
     }
 
     private getOptions(uri: any) {
-        if (typeof uri !== "string"
-            && typeof uri.host === "string"
+        if (typeof uri.host === "string"
             && typeof uri.path === "string"
             && typeof uri.protocol === "string"
         ) {
-            uri.protocol = (uri._protocol || "https") + ":";
             Object.assign(uri, this.options);
             return uri;
         }
 
         let options = {} as any;
         if (typeof uri === "string") {
-            options.uri = uri;
+            options = { ... url.parse(uri), ... this.options };
         } else {
-            Object.assign(options, uri);
+            if (typeof uri.uri === "undefined") {
+                throw new Error("Pass correctly uri or host&path&protocol options");
+            }
+            options = { ... url.parse(uri.uri), ... uri, ... this.options };
         }
 
-        Object.assign(options, this.options);
-        if (typeof options.uri === "string" && options.uri.indexOf("http") === -1) {
-            if (typeof options.protocol === "undefined") {
-                options.uri = "http://" + options.uri;
-            } else {
-                options.uri = options.protocol + "//" + options.uri;
-            }
-        }
-        if (typeof options.host === "undefined"
-            || typeof options.path === "undefined"
-            || typeof options.protocol === "undefined"
-        ) {
-            if (typeof options.uri === "undefined") {
-                throw new Error("Pass correctly uri or host&path&protocol options")
-            }
-            Object.assign(options, url.parse(options.uri))
-        }
-        options.protocol = (options._protocol || "https") + ":";
+        options.protocol = options.protocol || "https:";
         options.timeout = options.timeout || DEFAULT_TIMEOUT;
         options.responseType = options.responseType || "binary";
-        options.path = (options.pathname || options.path) + (options.search || "");
-        if (options._port !== -1) {
-            options.port = options._port;
-        }
+        options.path = options.path || options.pathname + (options.search || "");
         return options;
     }
 
     private getHttpWithMessage(code: number) {
         return {
             statusCode: code,
-            statusMessage: HttpStatus[code]
-        }
+            statusMessage: HttpStatus[code],
+        };
     }
 }

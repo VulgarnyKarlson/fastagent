@@ -1,27 +1,26 @@
-import { StringDecoder } from "string_decoder";
 import Stream from "stream";
+import { StringDecoder } from "string_decoder";
 import zlib from "zlib";
 
 export const type = (str: string) => str.split(/ *; */).shift();
 
-export const _shouldUnzip = res => {
+export const shouldUnzip = (res) => {
     if (res.statusCode === 204 || res.statusCode === 304) {
         // These aren't supposed to have any body
         return false;
     }
 
     // header content is a string, and distinction between 0 and no information is crucial
-    if (res.headers['content-length'] === '0') {
+    if (res.headers["content-length"] === "0") {
         // We know that the body is empty (unfortunately, this check does not cover chunked encoding)
         return false;
     }
 
-    // console.log(res);
-    return /^\s*(?:deflate|gzip)\s*$/.test(res.headers['content-encoding']);
+    return /^\s*(?:deflate|gzip)\s*$/.test(res.headers["content-encoding"]);
 };
 
 export const unzip = (req, res) => {
-    const unzip = zlib.createUnzip();
+    const unziped = zlib.createUnzip();
     const stream = new Stream();
     let decoder;
 
@@ -29,48 +28,48 @@ export const unzip = (req, res) => {
     // @ts-ignore
     stream.req = req;
 
-    unzip.on('error', (err: any) => {
-        if (err && err.code === 'Z_BUF_ERROR') {
+    unziped.on("error", (err: any) => {
+        if (err && err.code === "Z_BUF_ERROR") {
             // unexpected end of file is ignored by browsers and curl
-            stream.emit('end');
+            stream.emit("end");
             return;
         }
 
-        stream.emit('error', err);
+        stream.emit("error", err);
     });
 
     // pipe to unzip
-    res.pipe(unzip);
+    res.pipe(unziped);
 
     // override `setEncoding` to capture encoding
-    res.setEncoding = type => {
-        decoder = new StringDecoder(type);
+    res.setEncoding = (t) => {
+        decoder = new StringDecoder(t);
     };
 
     // decode upon decompressing with captured encoding
-    unzip.on('data', buf => {
+    unziped.on("data", (buf) => {
         if (decoder) {
             const str = decoder.write(buf);
-            if (str.length > 0) stream.emit('data', str);
+            if (str.length > 0) { stream.emit("data", str); }
         } else {
-            stream.emit('data', buf);
+            stream.emit("data", buf);
         }
     });
 
-    unzip.on('end', () => {
-        stream.emit('end');
+    unziped.on("end", () => {
+        stream.emit("end");
     });
 
     // override `on` to capture data listeners
-    const _on = res.on;
-    res.on = function(type, fn) {
-        if (type === 'data' || type === 'end') {
-            stream.on(type, fn.bind(res));
-        } else if (type === 'error') {
-            stream.on(type, fn.bind(res));
-            _on.call(res, type, fn);
+    const _ON = res.on;
+    res.on = function(t, fn) {
+        if (t === "data" || t === "end") {
+            stream.on(t, fn.bind(res));
+        } else if (t === "error") {
+            stream.on(t, fn.bind(res));
+            _ON.call(res, t, fn);
         } else {
-            _on.call(res, type, fn);
+            _ON.call(res, t, fn);
         }
 
         return this;
@@ -78,17 +77,17 @@ export const unzip = (req, res) => {
 };
 
 export const isText = (mime: string) => {
-    const parts = mime.split('/');
-    const type = parts[0];
+    const parts = mime.split("/");
+    const t = parts[0];
     const subtype = parts[1];
 
-    return type === 'text' || subtype === 'x-www-form-urlencoded';
+    return t === "text" || subtype === "x-www-form-urlencoded";
 };
 
 export const isImageOrVideo = (mime: string) => {
-    const type = mime.split('/')[0];
+    const t = mime.split("/")[0];
 
-    return type === 'image' || type === 'video';
+    return t === "image" || t === "video";
 };
 
 export const isJSON = (mime: string) => {

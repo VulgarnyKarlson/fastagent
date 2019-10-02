@@ -1,25 +1,24 @@
-import parsers from "./parsers";
-import * as utils from "./utils";
-import {OutputMessage} from "./types/response";
-import formidable from "formidable"
-import {HttpStatus} from "./enum/httpStatus";
+import formidable from "formidable";
 import { IncomingMessage} from "./enum/httpClient";
+import {HttpStatus} from "./enum/httpStatus";
+import parsers from "./parsers";
 import {responseType} from "./types/options";
+import {OutputMessage} from "./types/response";
+import * as utils from "./utils";
 
-export const parseResponse = (res: IncomingMessage & { data?: Buffer }, responseType: responseType): OutputMessage => {
+export const parseResponse = (res: IncomingMessage & { data?: Buffer }, ResponseType: responseType): OutputMessage => {
     return {
         statusCode: res.statusCode,
         statusMessage: HttpStatus[res.statusCode] || res.statusMessage,
-        raw: responseType === "empty" ? null: getParserType(res, responseType)(res.data),
-    }
+        raw: ResponseType === "empty" ? null : getParserType(res, ResponseType)(res.data),
+    };
 };
-
 
 const getParserType = (res, parserType) => {
     let parser = parsers[parserType];
     if (!parser) {
-        const mime = utils.type(res.headers['content-type'] || '') || 'text/plain';
-        const type = mime.split('/')[0];
+        const mime = utils.type(res.headers["content-type"] || "") || "text/plain";
+        const type = mime.split("/")[0];
         if (parsers[mime]) {
             parser = parsers[mime];
         } else if (type === "multipart") {
@@ -28,7 +27,7 @@ const getParserType = (res, parserType) => {
         } else if (utils.isText(mime)) {
             parser = parsers.text;
         } else if (utils.isJSON(mime)) {
-            parser = parsers['application/json'];
+            parser = parsers["application/json"];
         } else if (utils.isImageOrVideo(mime)) {
             parser = parsers.image;
         } else {
