@@ -5,7 +5,6 @@ import { request } from "./req";
 import {parseResponse} from "./res";
 import { Options} from "./types/options";
 import {OutputMessage} from "./types/response";
-import * as utils from "./utils";
 
 const DEFAULT_TIMEOUT = 60 * 1000;
 
@@ -58,23 +57,23 @@ export default class {
         }
 
         if (error.message.indexOf(HttpStatus[HttpStatus.EADDRINFO]) !== -1) {
-            this.getHttpWithMessage(HttpStatus.EADDRINFO);
+            return this.getHttpWithMessage(HttpStatus.EADDRINFO);
         } else if (error.message.indexOf(HttpStatus[HttpStatus.ECONNRESET]) !== -1
             || error.message.indexOf("hang up") !== -1
         ) {
-            this.getHttpWithMessage(HttpStatus.ECONNRESET);
+            return this.getHttpWithMessage(HttpStatus.ECONNRESET);
         } else if (error.message.indexOf(HttpStatus[HttpStatus.ETIMEDOUT]) !== -1) {
-            this.getHttpWithMessage(HttpStatus.ETIMEDOUT);
+            return this.getHttpWithMessage(HttpStatus.ETIMEDOUT);
         } else if (error.message.indexOf(HttpStatus[HttpStatus.ESOCKETTIMEDOUT]) !== -1) {
-            this.getHttpWithMessage(HttpStatus.ESOCKETTIMEDOUT);
+            return this.getHttpWithMessage(HttpStatus.ESOCKETTIMEDOUT);
         } else if (error.message.indexOf(HttpStatus[HttpStatus.ENOTFOUND]) !== -1) {
-            this.getHttpWithMessage(HttpStatus.ENOTFOUND);
+            return this.getHttpWithMessage(HttpStatus.ENOTFOUND);
         } else if (error.message.indexOf(HttpStatus[HttpStatus.ETOOLARGE]) !== -1) {
-            this.getHttpWithMessage(HttpStatus.ETOOLARGE);
+            return this.getHttpWithMessage(HttpStatus.ETOOLARGE);
         } else if (error.message.indexOf(HttpStatus[HttpStatus.ECONNREFUSED]) !== -1) {
-            this.getHttpWithMessage(HttpStatus.ECONNREFUSED);
+            return this.getHttpWithMessage(HttpStatus.ECONNREFUSED);
         } else {
-            this.getHttpWithMessage(HttpStatus.UNKNOWN);
+            return this.getHttpWithMessage(HttpStatus.UNKNOWN);
         }
     }
 
