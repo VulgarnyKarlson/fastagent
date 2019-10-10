@@ -1,7 +1,7 @@
-import {BenchmarkModel} from "./types/benchmarkModel";
 import * as http from "http";
-import * as _constants from "./_constants";
 import * as https from "https";
+import * as _constants from "./_constants";
+import {BenchmarkModel} from "./types/benchmarkModel";
 
 const benchmarkModel: BenchmarkModel[] = [
     {
@@ -10,7 +10,7 @@ const benchmarkModel: BenchmarkModel[] = [
                 res.resume().on("end", () => defer.resolve());
             }).end();
         },
-        target: "[core] http [GET]"
+        target: "[core] http [GET]",
     },
     {
         fn: (defer: any) => {
@@ -18,8 +18,8 @@ const benchmarkModel: BenchmarkModel[] = [
                 res.resume().on("end", () => defer.resolve());
             }).end();
         },
-        target: "[core] https [GET]"
-    }
+        target: "[core] https [GET]",
+    },
 ];
 
 export default benchmarkModel;

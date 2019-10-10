@@ -1,5 +1,5 @@
-import Client from "./";
 import nock from "nock";
+import Client from "./";
 import {HttpStatus} from "./";
 
 nock("http://benchmark.io")
@@ -13,7 +13,6 @@ const client = new Client();
     client.get({
         uri: "http://benchmark.io",
         responseType: "text",
-        fakeTimeout: 1500,
         timeout: 6000,
     }, console.log);
 })();

@@ -1,77 +1,66 @@
 import querystring from "querystring";
-import * as http from "./enum/httpClient";
-import {IncomingMessage} from "./enum/httpClient";
+import client, {IncomingMessage} from "./enum/httpClient";
+import {HttpStatus} from "./enum/httpStatus";
 import {Options} from "./types/options";
 import * as utils from "./utils";
 
 export const request = (
-    endCB: (res: IncomingMessage & {data?: Buffer}) => void,
-    errorCB: (error: Error) => void,
-    timeoutCB: () => void,
-    faketimeoutCB: () => void,
     options: Options,
+    endCB: (res: {
+        data?: Buffer,
+        statusMessage?: string;
+        statusCode?: HttpStatus,
+    }) => void,
 ) => {
-    let responseTimeout = null;
-    const destroy = () => {
-        if (responseTimeout) {
-            clearTimeout(responseTimeout);
-        }
-    };
-
-    const timeout = options.timeout;
-    responseTimeout = setTimeout( () => {
-        req.abort();
-        destroy();
-    }, timeout);
-
-    // req.abort() is high cost operation, sometimes servers are gives response, anyways we have default_timeout
-    if (options.fakeTimeout) {
-        setTimeout( () => {
-            faketimeoutCB();
-        }, options.fakeTimeout);
-    }
-
-    delete options.timeout;
-    const req = http.client[options.protocol].request(options, (res: http.IncomingMessage) => {
-        res.on("error", (err) => {
-            errorCB(err);
-            destroy();
+    let timeoutHandler = null;
+    const req = client[options.protocol].request(options, (res: IncomingMessage) => {
+        res.on("error", (err: Error & { code?: string }) => {
+            clearTimeout(timeoutHandler);
+            endCB(res);
         });
         if (options.responseType === "empty") {
-            res.resume().on("end", () => {
+            return res.resume().on("end", () => {
+                clearTimeout(timeoutHandler);
                 endCB(res);
-                destroy();
-            });
-        } else {
-            // zlib support
-            if (utils.shouldUnzip(res)) {
-                utils.unzip(req, res);
-            }
-            const data = [];
-            // Protectiona against zip bombs and other nuisance
-            let responseBytesLeft = options.maxResponseSize || 200000000;
-            res.on("data", (chunk) => {
-                responseBytesLeft -= chunk.byteLength || chunk.length;
-                if (responseBytesLeft < 0) {
-                    const err = new Error("Maximum response size reached");
-                    Object.assign(err, {code: ""});
-                    res.destroy(err);
-                } else {
-                    data.push(...chunk);
-                }
-            });
-            res.on("end", () => {
-                Object.assign(res, { data: utils.fromArrayToBuffer(data) });
-                endCB(res);
-                destroy();
             });
         }
-    }).on("error", (err) => {
-        errorCB(err);
-        destroy();
-    }).on("abort", () => {
-        timeoutCB();
+        // zlib support
+        if (utils.shouldUnzip(res)) {
+            utils.unzip(req, res);
+        }
+        const data = [];
+        // Protectiona against zip bombs and other nuisance
+        let responseBytesLeft = options.maxResponseSize || 200000000;
+        res.on("data", (chunk) => {
+            responseBytesLeft -= chunk.byteLength || chunk.length;
+            if (responseBytesLeft < 0) {
+                const err = new Error("Maximum response size reached");
+                Object.assign(err, {code: ""});
+                res.destroy(err);
+            } else {
+                data.push(...chunk);
+            }
+        });
+        res.on("end", () => {
+            Object.assign(res, { data: utils.fromArrayToBuffer(data) });
+            clearTimeout(timeoutHandler);
+            endCB(res);
+        });
     });
+
+    req.on("error", (err: Error & { code?: keyof HttpStatus }) => {
+        clearTimeout(timeoutHandler);
+        endCB({ statusCode: HttpStatus[err.code] || HttpStatus[err.message], statusMessage: err.code || err.message });
+    });
+
+    req.on("abort", () => {
+        clearTimeout(timeoutHandler);
+        endCB({ statusCode: HttpStatus.ABORTED });
+    });
+
+    if (typeof options.timeout === "number" && options.timeout > 0) {
+        timeoutHandler = setTimeout(req.abort.bind(req), options.timeout);
+    }
 
     if (options.method === "POST" || options.method === "post") {
         if (typeof options.postBody !== "string") {

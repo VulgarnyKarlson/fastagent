@@ -8,7 +8,7 @@ export type responseType = "application/x-www-form-urlencoded"
     | "application/octet-stream"
     | "application/pdf"
     | "image"
-    | "empty"
+    | "empty";
 
 export { Protocol };
 export interface Options {
@@ -22,7 +22,6 @@ export interface Options {
     timeout?: number;
     protocol?: Protocol;
     family?: 4 | 6;
-    fakeTimeout?: number;
     postBody?: any;
     headers?: any;
     encoding?: string;

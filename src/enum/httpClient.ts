@@ -1,7 +1,7 @@
 import http from "http";
 import https from "https";
 
-export const client = {
+export default  {
     "http:": http,
     "https:": https,
 };

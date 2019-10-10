@@ -1,4 +1,4 @@
-const superagent = require('superagent');
+import superagent from "superagent";
 import { HTTP_BASE_URL, HTTPS_BASE_URL, PATH } from "./_constants";
 import { BenchmarkModel } from "./types/benchmarkModel"
 
@@ -7,17 +7,13 @@ const httpsUrl = HTTPS_BASE_URL + PATH;
 const benchmarkModels: BenchmarkModel[] = [
     {
         fn: (defer: any) => {
-            superagent.get(httpUrl).then( () => {
-                defer.resolve()
-            });
+            superagent.get(httpUrl).then( () => defer.resolve());
         },
         target: "[superagent] http [GET]",
     },
     {
         fn: (defer: any) => {
-            superagent.get(httpsUrl).then( () => {
-                defer.resolve()
-            });
+            superagent.get(httpsUrl).then( () => defer.resolve());
         },
         target: "[superagent] https [GET]",
     },

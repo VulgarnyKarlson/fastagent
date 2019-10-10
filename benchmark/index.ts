@@ -1,4 +1,4 @@
-import Benchmark, { Event } from "benchmark";
+import Benchmark from "benchmark";
 import nock from "nock";
 import {
     HTTP_BASE_URL,
@@ -6,12 +6,12 @@ import {
     PATH,
     RESPONSE_BODY,
 } from "./_constants";
+import axios from "./axios";
 import coreModels from "./core";
 import fastAgent from "./fastagent";
 import got from "./got";
-import axios from "./axios";
-import superagent from "./superagent";
 import request from "./request";
+import superagent from "./superagent";
 
 const suite = new Benchmark.Suite();
 
@@ -30,8 +30,8 @@ nock(HTTPS_BASE_URL)
     .reply(200, RESPONSE_BODY);
 
 const models = [
-    ... fastAgent,
     ... coreModels,
+    ... fastAgent,
     ... superagent,
     ... request,
     ... axios,

@@ -1,3 +1,3 @@
-export default (data) => {
+export default (data: Buffer) => {
     return data;
 };

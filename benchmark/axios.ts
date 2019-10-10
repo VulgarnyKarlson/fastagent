@@ -5,18 +5,14 @@ import { BenchmarkModel } from "./types/benchmarkModel";
 const benchmarkModels: BenchmarkModel[] = [
     {
         fn: (defer: any) => {
-            axios.get(`${HTTP_BASE_URL}${PATH}`).then( () => {
-                defer.resolve();
-            })
+            axios.get(`${HTTP_BASE_URL}${PATH}`).then( () => defer.resolve());
         },
         target: "[axios] http [GET]",
         defer: true,
     },
     {
         fn: (defer: any) => {
-            axios.get(`${HTTPS_BASE_URL}${PATH}`).then( () => {
-                defer.resolve();
-            });
+            axios.get(`${HTTPS_BASE_URL}${PATH}`).then( () => defer.resolve());
         },
         target: "[axios] https [GET]",
         defer: true,

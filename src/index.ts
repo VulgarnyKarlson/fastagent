@@ -35,11 +35,8 @@ export default class {
         };
 
         request(
-            (res: IncomingMessage & {data?: Buffer}) => callCallback(parseResponse(res, options.responseType)),
-            (error: Error) => callCallback(this.errorCB(error)),
-            () => callCallback(this.getHttpWithMessage(HttpStatus.REQUEST_TIMEOUT)),
-            () => callCallback(this.getHttpWithMessage(HttpStatus.ABORTED)),
             { ... options, agent: this.agents[options.protocol] },
+            (res: IncomingMessage & {data?: Buffer}) => callCallback(parseResponse(res, options.responseType)),
         );
     }
 
@@ -49,32 +46,6 @@ export default class {
 
     public post(opts: Options, cb: (data: OutputMessage) => void) {
         return this.makeRequest({ ... this.getOptions(opts), method: "POST" }, cb);
-    }
-
-    private errorCB(error) {
-        if (typeof error.message !== "string") {
-            return this.getHttpWithMessage(HttpStatus.UNKNOWN);
-        }
-
-        if (error.message.indexOf(HttpStatus[HttpStatus.EADDRINFO]) !== -1) {
-            return this.getHttpWithMessage(HttpStatus.EADDRINFO);
-        } else if (error.message.indexOf(HttpStatus[HttpStatus.ECONNRESET]) !== -1
-            || error.message.indexOf("hang up") !== -1
-        ) {
-            return this.getHttpWithMessage(HttpStatus.ECONNRESET);
-        } else if (error.message.indexOf(HttpStatus[HttpStatus.ETIMEDOUT]) !== -1) {
-            return this.getHttpWithMessage(HttpStatus.ETIMEDOUT);
-        } else if (error.message.indexOf(HttpStatus[HttpStatus.ESOCKETTIMEDOUT]) !== -1) {
-            return this.getHttpWithMessage(HttpStatus.ESOCKETTIMEDOUT);
-        } else if (error.message.indexOf(HttpStatus[HttpStatus.ENOTFOUND]) !== -1) {
-            return this.getHttpWithMessage(HttpStatus.ENOTFOUND);
-        } else if (error.message.indexOf(HttpStatus[HttpStatus.ETOOLARGE]) !== -1) {
-            return this.getHttpWithMessage(HttpStatus.ETOOLARGE);
-        } else if (error.message.indexOf(HttpStatus[HttpStatus.ECONNREFUSED]) !== -1) {
-            return this.getHttpWithMessage(HttpStatus.ECONNREFUSED);
-        } else {
-            return this.getHttpWithMessage(HttpStatus.UNKNOWN);
-        }
     }
 
     private getOptions(uri: any) {
@@ -101,12 +72,5 @@ export default class {
         options.responseType = options.responseType || "binary";
         options.path = options.path || options.pathname + (options.search || "");
         return options;
-    }
-
-    private getHttpWithMessage(code: number) {
-        return {
-            statusCode: code,
-            statusMessage: HttpStatus[code],
-        };
     }
 }

@@ -7,7 +7,10 @@ import {OutputMessage} from "./types/response";
 import * as utils from "./utils";
 
 export const parseResponse = (res: IncomingMessage & { data?: Buffer }, ResponseType: responseType): OutputMessage => {
-    return {
+    return typeof res.data === "undefined" ? {
+        statusCode: res.statusCode,
+        statusMessage: HttpStatus[res.statusCode] || res.statusMessage,
+    } : {
         statusCode: res.statusCode,
         statusMessage: HttpStatus[res.statusCode] || res.statusMessage,
         raw: ResponseType === "empty" ? null : getParserType(res, ResponseType)(res.data),

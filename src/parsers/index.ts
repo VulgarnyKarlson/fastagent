@@ -1,7 +1,7 @@
-import urlEncoded from "./urlencoded";
+import binary from "./binary";
 import json from "./json";
 import text from "./text";
-import binary from "./binary";
+import urlEncoded from "./urlencoded";
 
 const parsers = {
     "application/x-www-form-urlencoded": urlEncoded,
