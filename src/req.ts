@@ -3,6 +3,7 @@ import client, {IncomingMessage} from "./enum/httpClient";
 import {HttpStatus} from "./enum/httpStatus";
 import {Options} from "./types/options";
 import * as utils from "./utils";
+import decompressResponse from "decompress-response";
 
 export const request = (
     options: Options,
@@ -13,7 +14,8 @@ export const request = (
     }) => void,
 ) => {
     let timeoutHandler = null;
-    const req = client[options.protocol].request(options, (res: IncomingMessage) => {
+    const req = client[options.protocol].request(options, (originalRes: IncomingMessage) => {
+        const res = decompressResponse(originalRes);
         res.on("error", (err: Error & { code?: string }) => {
             clearTimeout(timeoutHandler);
             endCB(res);
@@ -24,10 +26,7 @@ export const request = (
                 endCB(res);
             });
         }
-        // zlib support
-        if (utils.shouldUnzip(res)) {
-            utils.unzip(req, res);
-        }
+
         const data = [];
         // Protectiona against zip bombs and other nuisance
         let responseBytesLeft = options.maxResponseSize || 200000000;
