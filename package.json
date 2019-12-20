@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "jest --config jestconfig.json",
+    "test": "NODE_PATH=src jest --config jest.config.js",
     "benchmark": "node -r ts-node/register --max-old-space-size=4096 benchmark/index.ts"
   },
   "repository": {
@@ -42,6 +42,7 @@
   "homepage": "https://github.com/VulgarnyKarlson/fastagent#readme",
   "devDependencies": {
     "@types/benchmark": "^1.0.31",
+    "@types/jest": "^24.0.24",
     "@types/node": "12.0.0",
     "@types/request": "^2.48.3",
     "@types/request-promise": "^4.1.44",
@@ -54,6 +55,7 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "superagent": "^5.1.0",
+    "ts-jest": "^24.2.0",
     "ts-node": "^8.4.1",
     "tsc": "^1.20150623.0",
     "tslint": "^5.20.0",
