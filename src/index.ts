@@ -71,6 +71,7 @@ export default class {
         options.timeout = options.timeout || DEFAULT_TIMEOUT;
         options.responseType = options.responseType || "binary";
         options.path = options.path || options.pathname + (options.search || "");
+        options.headers = options.headers || {};
         return options;
     }
 }

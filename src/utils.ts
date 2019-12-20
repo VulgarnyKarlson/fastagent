@@ -1,6 +1,7 @@
 import Stream from "stream";
 import { StringDecoder } from "string_decoder";
-import zlib from "zlib";
+import * as utils from "util";
+import zlib, {CompressCallback, InputType } from "zlib";
 
 export const type = (str: string) => str.split(/ *; */).shift();
 
@@ -75,6 +76,8 @@ export const unzip = (req, res) => {
         return this;
     };
 };
+
+export const compress: (buf: InputType) => Promise<Buffer> = utils.promisify(zlib.gzip);
 
 export const isText = (mime: string) => {
     const parts = mime.split("/");

@@ -24,7 +24,7 @@ export interface Options {
     family?: 4 | 6;
     postBody?: any;
     headers?: any;
-    encoding?: string;
+    encoding?: "gzip" | "formdata";
     agent?: any;
     httpAgent?: any;
     httpsAgent?: any;

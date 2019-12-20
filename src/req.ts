@@ -14,6 +14,9 @@ export const request = (
     }) => void,
 ) => {
     let timeoutHandler = null;
+    if (options.encoding === "gzip") {
+        options.headers["Content-Encoding"] = "gzip";
+    }
     const req = client[options.protocol].request(options, (originalRes: IncomingMessage) => {
         const res = decompressResponse(originalRes);
         res.on("error", (err: Error & { code?: string }) => {
@@ -62,11 +65,23 @@ export const request = (
     }
 
     if (options.method === "POST" || options.method === "post") {
-        if (typeof options.postBody !== "string") {
+        if (typeof options.encoding === "undefined") {
+            req.write(options.postBody);
+            req.end();
+        } else if (options.encoding === "gzip") {
+            if (typeof options.postBody === "object" && Buffer.isBuffer(options.postBody) === false) {
+                options.postBody = JSON.stringify(options.postBody);
+            }
+            utils.compress(options.postBody).then( (compressed) => {
+                req.write(compressed);
+                req.end();
+            });
+        } else if (options.encoding === "formdata") {
             options.postBody = querystring.stringify(options.postBody);
+            req.write(options.postBody);
+            req.end();
         }
-        req.write(options.postBody);
+    } else {
+        req.end();
     }
-
-    req.end();
 };
