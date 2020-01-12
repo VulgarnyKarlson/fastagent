@@ -1,10 +1,8 @@
 import formidable from "formidable";
-import { IncomingMessage} from "./enum/httpClient";
-import {HttpStatus} from "./enum/httpStatus";
+import { HttpStatus, IncomingMessage } from "req";
+import * as utils from "../utils";
+import { OutputMessage, responseType } from "./";
 import parsers from "./parsers";
-import {responseType} from "./types/options";
-import {OutputMessage} from "./types/response";
-import * as utils from "./utils";
 
 export const parseResponse = (res: IncomingMessage & { data?: Buffer }, ResponseType: responseType): OutputMessage => {
     return typeof res.data === "undefined" ? {

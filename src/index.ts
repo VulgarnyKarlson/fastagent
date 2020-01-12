@@ -1,16 +1,11 @@
+import { IncomingMessage, Options, request } from "req";
+import { OutputMessage, parseResponse } from "res";
 import url from "url";
-import {IncomingMessage} from "./enum/httpClient";
-import {HttpStatus} from "./enum/httpStatus";
-import { request } from "./req";
-import {parseResponse} from "./res";
-import { Options} from "./types/options";
-import {OutputMessage} from "./types/response";
 
 const DEFAULT_TIMEOUT = 60 * 1000;
 
-export { Options };
-export { HttpStatus };
-export { OutputMessage };
+export * from "./req";
+export * from "./res";
 
 export default class {
 
@@ -57,7 +52,7 @@ export default class {
             return uri;
         }
 
-        let options = {} as any;
+        let options: any = {};
         if (typeof uri === "string") {
             options = { ... url.parse(uri), ... this.options };
         } else {

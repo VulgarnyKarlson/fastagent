@@ -1,14 +1,11 @@
-import Client from "../src/";
-import {Protocol, responseType} from "../src/types/options";
-import * as _constants from "./_constants";
-import {HTTP_BASE_URL} from "./_constants";
-import {PATH} from "./_constants";
+import Client, {Protocol, responseType} from "../src/";
+import { HOST, HTTP_BASE_URL, PATH} from "./_constants";
 import { BenchmarkModel } from "./types/benchmarkModel";
 
 const client = new Client();
 const opts = {
-    host: _constants.HOST,
-    path: _constants.PATH,
+    host: HOST,
+    path: PATH,
 };
 
 const httpOptsEmpty = { ... opts, protocol: "http:" as Protocol, responseType: "empty" as responseType };

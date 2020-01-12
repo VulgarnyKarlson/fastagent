@@ -1,3 +1,20 @@
+import http from "http";
+import https from "https";
+import {responseType} from "res";
+
+export type Method =
+    | "get" | "GET"
+    | "post" | "POST";
+
+export type Protocol = "https:" | "http:";
+
+export const HttpClient = {
+    "http:": http,
+    "https:": https,
+};
+
+export type IncomingMessage = http.IncomingMessage;
+
 export enum HttpStatus {
     CONTINUE = 100,
     SWITCHING_PROTOCOLS = 101,
@@ -53,3 +70,24 @@ export enum HttpStatus {
     ECONNREFUSED = 607,
     UNKNOWN = 1000,
 }
+
+export interface Options {
+    uri?: string;
+    host?: string;
+    path?: string;
+    port?: number;
+    responseType?: responseType;
+    maxResponseSize?: number;
+    method?: Method;
+    timeout?: number;
+    protocol?: Protocol;
+    family?: 4 | 6;
+    postBody?: any;
+    headers?: any;
+    encoding?: "gzip" | "formdata";
+    agent?: any;
+    httpAgent?: any;
+    httpsAgent?: any;
+}
+
+export { request } from "./req";

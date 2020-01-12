@@ -1,9 +1,7 @@
-import querystring from "querystring";
-import client, {IncomingMessage} from "./enum/httpClient";
-import {HttpStatus} from "./enum/httpStatus";
-import {Options} from "./types/options";
-import * as utils from "./utils";
 import decompressResponse from "decompress-response";
+import querystring from "querystring";
+import * as utils from "utils";
+import { HttpClient, HttpStatus, IncomingMessage, Options } from "./";
 
 export const request = (
     options: Options,
@@ -17,7 +15,7 @@ export const request = (
     if (options.encoding === "gzip") {
         options.headers["Content-Encoding"] = "gzip";
     }
-    const req = client[options.protocol].request(options, (originalRes: IncomingMessage) => {
+    const req = HttpClient[options.protocol].request(options, (originalRes: IncomingMessage) => {
         const res = decompressResponse(originalRes);
         res.on("error", (err: Error & { code?: string }) => {
             clearTimeout(timeoutHandler);
