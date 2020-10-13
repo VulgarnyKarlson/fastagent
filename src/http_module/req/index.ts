@@ -1,6 +1,6 @@
 import http from "http";
+import {responseType} from "http_module/res";
 import https from "https";
-import {responseType} from "res";
 
 export type Method =
     | "get" | "GET"
