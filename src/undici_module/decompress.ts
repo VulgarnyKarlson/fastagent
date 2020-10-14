@@ -1,8 +1,8 @@
 import mimicResponse from "mimic-response";
 import {PassThrough, Transform} from "stream";
 import zlib from "zlib";
-import { HttpStatus } from "./interface";
 import * as utils from "../utils";
+import { HttpStatus } from "./interface";
 
 export default (response) => {
     const contentEncoding = (response.headers["content-encoding"] || "").toLowerCase();

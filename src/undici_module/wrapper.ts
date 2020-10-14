@@ -1,9 +1,9 @@
 import { Pool } from "undici";
-import {RequestParams } from "undici_module/interface";
 import {HttpStatus} from "../http_module/req";
 import { parseResponse } from "../res";
 import * as utils from "../utils";
 import decompress from "./decompress";
+import {RequestParams } from "./interface";
 
 export default class {
     private clients = [];

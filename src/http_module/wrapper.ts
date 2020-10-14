@@ -1,6 +1,6 @@
-import { IncomingMessage, Options, request } from "http_module/req";
-import { OutputMessage, parseResponse } from "res";
 import url from "url";
+import { OutputMessage, parseResponse } from "../res";
+import { IncomingMessage, Options, request } from "./req";
 
 const DEFAULT_TIMEOUT = 60 * 1000;
 

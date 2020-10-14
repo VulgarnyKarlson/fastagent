@@ -1,6 +1,6 @@
 import formidable from "formidable";
-import { HttpStatus, IncomingMessage } from "http_module/req";
-import * as utils from "utils";
+import { HttpStatus, IncomingMessage } from "../http_module/req";
+import * as utils from "../utils";
 import { OutputMessage, responseType } from "./";
 import parsers from "./parsers";
 
