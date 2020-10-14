@@ -1,19 +1,16 @@
-import http from "http";
-import https from "https";
-import {responseType} from "../../res";
+import {responseType} from "../res";
 
-export type Method =
-    | "get" | "GET"
-    | "post" | "POST";
-
-export type Protocol = "https:" | "http:";
-
-export const HttpClient = {
-    "http:": http,
-    "https:": https,
-};
-
-export type IncomingMessage = http.IncomingMessage;
+export interface RequestParams {
+    host: string;
+    path: string;
+    body?: any;
+    headers?: object;
+    requestTimeout?: number;
+    protocol: string;
+    responseType?: responseType;
+    method: "POST"|"GET";
+    encoding?: "gzip";
+}
 
 export enum HttpStatus {
     CONTINUE = 100,
@@ -61,33 +58,14 @@ export enum HttpStatus {
     GATEWAY_TIMEOUT = 504,
     HTTP_VERSION_NOT_SUPPORTED = 505,
     ECONNRESET = 600,
-    ETIMEDOUT = 601,
+    UND_ERR_HEADERS_TIMEOUT = 601,
     EADDRINFO = 602,
-    ESOCKETTIMEDOUT = 603,
-    ABORTED = 604,
-    ENOTFOUND = 605,
-    ETOOLARGE = 606,
-    ECONNREFUSED = 607,
+    UND_ERR_SOCKET_TIMEOUT = 603,
+    UND_ERR_ABORTED = 604,
+    UND_ERR_SOCKET = 605,
+    UND_ERR_TRAILER_MISMATCH = 606,
+    UND_ERR_CONTENT_LENGTH_MISMATCH = 607,
+    UND_ERR_REQUEST_TIMEOUT = 608,
+    MAX_BODYLENGTH = 609,
     UNKNOWN = 1000,
 }
-
-export interface Options {
-    uri?: string;
-    host?: string;
-    path?: string;
-    port?: number;
-    responseType?: responseType;
-    maxResponseSize?: number;
-    method?: Method;
-    timeout?: number;
-    protocol?: Protocol;
-    family?: 4 | 6;
-    postBody?: any;
-    headers?: any;
-    encoding?: "gzip" | "formdata";
-    agent?: any;
-    httpAgent?: any;
-    httpsAgent?: any;
-}
-
-export { request } from "./req";
