@@ -1,6 +1,6 @@
 import decompressResponse from "decompress-response";
 import querystring from "querystring";
-import * as utils from "utils";
+import * as utils from "../../utils";
 import { HttpClient, HttpStatus, IncomingMessage, Options } from "./";
 
 export const request = (
