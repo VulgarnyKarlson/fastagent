@@ -1,11 +1,10 @@
 export interface RequestParams {
     host: string;
-    port?: number;
     path: string;
     post?: any;
     headers?: object;
     timeout?: number;
     protocol: string;
-    method: "post"|"get";
+    method: "POST"|"GET";
     encoding?: "gzip";
 }
