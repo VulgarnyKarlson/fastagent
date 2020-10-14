@@ -2,3 +2,5 @@ tsconfig.json
 src
 .idea
 yarn-error.log
+benchmark
+server.js

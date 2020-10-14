@@ -1,6 +1,7 @@
-import { Writable } from "stream";
-import { Client } from "undici";
-import { HOST, HTTP_BASE_URL, PATH} from "./_constants";
+import { getClient } from "../dist";
+import {HttpMethod} from "../src/undici_module/interface";
+import UndiciModule from "../src/undici_module/wrapper";
+import { HOST, PATH} from "./_constants";
 import { BenchmarkModel } from "./types/benchmarkModel";
 
 const opts = {
@@ -9,32 +10,20 @@ const opts = {
 };
 
 const undiciOptions = {
+    host: "127.0.0.1",
+    protocol: "http",
     path: "/",
-    method: "GET",
-    requestTimeout: 0,
+    method: HttpMethod.GET,
+    requestTimeout: 1500,
 };
 
-const client = new Client(`http://127.0.0.1`, {
-    pipelining: 100,
-});
+const client = getClient("undici") as any;
 
 const benchmarkModels: BenchmarkModel[] = [
-
     {
         fn: (defer: any) => {
             client
-                .request(undiciOptions)
-                .then(({ body }) => {
-                    body
-                        .pipe(new Writable({
-                            write(chunk, encoding, callback) {
-                                callback();
-                            },
-                        }))
-                        .on("close", () => {
-                            defer.resolve();
-                        });
-                });
+                .makeRequest(undiciOptions).then(() =>  defer.resolve());
         },
         target: "[Undici] http [GET]",
         defer: true,

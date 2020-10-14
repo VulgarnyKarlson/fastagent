@@ -1,5 +1,10 @@
 import {responseType} from "../res";
 
+export enum HttpMethod {
+    GET = "GET",
+    POST = "POST",
+};
+
 export interface RequestParams {
     host: string;
     path: string;
@@ -8,7 +13,7 @@ export interface RequestParams {
     requestTimeout?: number;
     protocol: string;
     responseType?: responseType;
-    method: "POST"|"GET";
+    method: HttpMethod;
     encoding?: "gzip";
 }
 

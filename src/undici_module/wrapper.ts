@@ -16,6 +16,7 @@ export default class {
 
     }
 
+    // tslint:disable-next-line:cognitive-complexity
     public makeRequest(opts: RequestParams) {
         opts.responseType = opts.responseType || "binary";
         return new Promise( async (resolve) => {
@@ -37,7 +38,7 @@ export default class {
                         res.body.headers = res.headers;
                         res.body.maxResponseSize = this.options.maxResponseSize;
                         res.data = await decompress(res.body);
-                        setImmediate( () => resolve(parseResponse(res, opts.responseType)));
+                        resolve(parseResponse(res, opts.responseType));
                     } catch (e) {
                         resolve({
                             statusMessage: e.code || res.statusCode,

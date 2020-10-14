@@ -1,8 +1,10 @@
-import Client, {Protocol, responseType} from "../src/";
+import { getClient } from "../src";
+import {Protocol} from "../src/http_module/req/index";
+import { responseType } from "../src/res";
 import { HOST, HTTP_BASE_URL, PATH} from "./_constants";
 import { BenchmarkModel } from "./types/benchmarkModel";
 
-const client = new Client();
+const client = getClient("http");
 const opts = {
     host: HOST,
     path: PATH,
