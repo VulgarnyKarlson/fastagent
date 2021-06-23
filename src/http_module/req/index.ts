@@ -68,6 +68,7 @@ export enum HttpStatus {
     ENOTFOUND = 605,
     ETOOLARGE = 606,
     ECONNREFUSED = 607,
+    UND_ERR_CONNECT_TIMEOUT = 604,
     UNKNOWN = 1000,
 }
 

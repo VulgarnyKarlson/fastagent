@@ -1,4 +1,4 @@
-import Client from "../src/index";
+import * as Client from "../src/index";
 import * as prep from "./prepareNock";
 
 const data = {
@@ -8,7 +8,7 @@ const data = {
 };
 
 test("should support transparent gunzip", (done) => {
-    const client = new Client({
+    const client = Client.getClient("undici", {
         maxResponseSize: 1,
         responseType: "application/json",
     });
@@ -17,8 +17,10 @@ test("should support transparent gunzip", (done) => {
             "Content-Type": "application/json;charset=utf-8",
         },
     });
-    client.get({
+    client.makeRequest({
         uri: prep.HTTP_BASE_URL,
+        method: "GET",
+        protocol:"http",
         path: prep.PATH,
     }, (res) => {
         expect(res.statusMessage).toEqual("Maximum response size reached");

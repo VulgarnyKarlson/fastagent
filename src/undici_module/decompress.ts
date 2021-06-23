@@ -44,9 +44,9 @@ export default (response) => {
             }
             finalStream.destroy(error);
         });
-        response.pipe(checker).pipe(decompressStream).pipe(finalStream);
+        response.body.pipe(checker).pipe(decompressStream).pipe(finalStream);
     } else {
-        response.pipe(checker).pipe(finalStream);
+        response.body.pipe(checker).pipe(finalStream);
     }
     return new Promise( (resolve, reject) => {
         finalStream.on("error", (err: Error & { code?: string }) => {

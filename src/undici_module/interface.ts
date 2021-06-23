@@ -6,14 +6,22 @@ export enum HttpMethod {
 };
 
 export interface RequestParams {
-    host: string;
-    path: string;
+    host?: string;
+    hostname?: string;
+    port?: string;
+    connections?: number;
+    pipelining?: number;
+    maxResponseSize?: number;
+    path?: string;
     body?: any;
     headers?: object;
     requestTimeout?: number;
-    protocol: string;
+    connectTimeout?: number,
+    headersTimeout?: number,
+    bodyTimeout?: number,
+    protocol?: string;
     responseType?: responseType;
-    method: HttpMethod;
+    method?: HttpMethod;
     encoding?: "gzip";
 }
 

@@ -1,5 +1,5 @@
 import zlib from "zlib";
-import Client from "../src/index";
+import * as Client from "../src/index";
 import * as prep from "./prepareNock";
 
 const data = {
@@ -9,16 +9,18 @@ const data = {
 };
 
 test("should support transparent gunzip", (done) => {
-    const client = new Client();
+    const client = Client.getClient("undici");
     prep.setupNock(zlib.gzipSync(JSON.stringify(data)), {
         headers: {
             "Content-Type": "application/json;charset=utf-8",
             "Content-Encoding": "gzip",
         },
     });
-    client.get({
+    client.makeRequest({
         uri: prep.HTTP_BASE_URL,
         path: prep.PATH,
+        protocol:"http",
+        method: "GET",
         responseType: "application/json",
     }, (res) => {
         expect(data).toEqual(res.raw);
@@ -27,16 +29,18 @@ test("should support transparent gunzip", (done) => {
 });
 
 test("should return buffer on unsuccessfull gunzip", (done) => {
-    const client = new Client();
+    const client = Client.getClient("undici");
     prep.setupNock("nothing", {
         headers: {
             "Content-Type": "application/json;charset=utf-8",
             "Content-Encoding": "gzip",
         },
     });
-    client.get({
+    client.makeRequest({
         uri: prep.HTTP_BASE_URL,
         path: prep.PATH,
+        method: "GET",
+        protocol:"http",
         responseType: "application/json",
     }, (res) => {
         expect(res.raw as any instanceof Buffer).toBe(true);
