@@ -36,14 +36,15 @@ export default class {
             host = opts.hostname + ":" + opts.port
         }
         const pool = this.getPool(host, opts.protocol);
+        const timeout = isNaN(Number(opts.requestTimeout)) === false ? opts.requestTimeout : this.options.requestTimeout
         try {
             const res = await pool.request({
                 path: opts.path,
                 method: opts.method,
                 body: opts.body,
-                bodyTimeout: this.options.bodyTimeout,
-                connectTimeout: this.options.connectTimeout,
-                headersTimeout: this.options.headersTimeout,
+                bodyTimeout: timeout,
+                connectTimeout: timeout,
+                headersTimeout: timeout,
             });
             res.maxResponseSize = this.options.maxResponseSize;
             res.data = await decompress(res);
