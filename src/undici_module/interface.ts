@@ -3,11 +3,14 @@ import {responseType} from "../res";
 export enum HttpMethod {
     GET = "GET",
     POST = "POST",
-};
+}
 
 export interface RequestParams {
     host?: string;
     hostname?: string;
+    url?: string;
+    pathname?: string;
+    search?:string;
     port?: string;
     connections?: number;
     pipelining?: number;

@@ -1,5 +1,7 @@
 import * as utils from "util";
-import zlib, {InputType } from "zlib";
+import zlib, {InputType} from "zlib";
+import {HttpMethod, RequestParams} from "./undici_module/interface";
+import urlParser from "fast-url-parser"
 
 export const type = (str: string) => str.split(/ *; */).shift();
 
@@ -30,3 +32,24 @@ export const fromArrayToBuffer = (arr) => {
     arr.length = 0;
     return buff;
 };
+
+export const extractOpts = async (options: RequestParams) => {
+    if (typeof options.url !== "undefined") {
+        const parsed = urlParser.parse(options.url)
+        options = { ...options, host: parsed.host, port: options.port, protocol: options.protocol, path: options.path }
+    }
+    if (options.encoding === "gzip") {
+        options.headers["Content-Encoding"] = "gzip";
+        if (options.body.length > 0) {
+            options.body = await compress(options.body);
+        }
+    }
+    options.protocol = options.protocol || "https:";
+    options.method = options.method || HttpMethod.GET
+    options.requestTimeout = options.requestTimeout || 1500;
+    options.responseType = options.responseType || "binary";
+    options.path = options.path || (options.pathname || "") + (options.search || "") || "/";
+    options.port = typeof options.port !== "undefined" ? `:${options.port}`:""
+    options.host = `${options.protocol}//${options.host || options.hostname}${options.port}`;
+    return options
+}

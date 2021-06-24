@@ -1,9 +1,9 @@
 import { Pool } from "undici";
 import {HttpStatus} from "../http_module/req";
 import { parseResponse } from "../res";
-import * as utils from "../utils";
 import decompress from "./decompress";
 import {RequestParams } from "./interface";
+import {extractOpts} from "../utils";
 
 export default class {
     private clients = [];
@@ -18,24 +18,8 @@ export default class {
     }
 
     public async makeRequest(opts: RequestParams) {
-        opts.responseType = opts.responseType || "binary";
-        if (opts.encoding === "gzip") {
-            opts.headers["Content-Encoding"] = "gzip";
-            if (opts.body.length > 0) {
-                opts.body = await utils.compress(opts.body);
-            }
-        }
-        let host = opts.host
-        if (opts.protocol === "https" && typeof opts.port === "undefined") {
-            opts.port = ""
-        }
-        if (typeof opts.path === "undefined" || opts.path.length === 0) {
-            opts.path = "/"
-        }
-        if (typeof host === "undefined") {
-            host = opts.hostname + ":" + opts.port
-        }
-        const pool = this.getPool(host, opts.protocol);
+        opts  = await extractOpts(opts)
+        const pool = this.getPool(opts.host);
         const timeout = isNaN(Number(opts.requestTimeout)) === false ? opts.requestTimeout : this.options.requestTimeout
         try {
             const res = await pool.request({
@@ -57,16 +41,16 @@ export default class {
         }
     }
 
-    private getPool(host, protocol) {
-        return this.clients[host] || [
-            this.clients[host] = new Pool(`${protocol}://${host}`, {
+    private getPool(url) {
+        return this.clients[url] || [
+            this.clients[url] = new Pool(url, {
                 headersTimeout: this.options.headersTimeout,
                 connectTimeout: this.options.connectTimeout,
                 bodyTimeout: this.options.bodyTimeout,
                 connections: this.options.connections,
                 pipelining: this.options.pipelining,
             } as any),
-            this.clients[host],
+            this.clients[url],
         ][1];
     }
 }
